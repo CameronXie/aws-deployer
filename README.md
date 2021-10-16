@@ -1,13 +1,16 @@
 # AWS CDK Deployer
 
-This project is using `docker compose` to create two containers, docker daemon and nodeJS
+A docker image contains aws deployment tools.
 
-**Stacks:**
+Tools:
 
-* docker daemon (dind)
+* nodeJS (aws cdk)
 * aws cli
-* aws cdk
-* NodeJS v12
+* aws sam cli
+* eksctl
+* kubectl
+* helm
+* support docker-in-docker
 
 ## Setup
 

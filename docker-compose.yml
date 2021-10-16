@@ -1,7 +1,7 @@
-version: '3.7'
+version: '3.8'
 services:
   node:
-    container_name: acme_node
+    container_name: deployer_node
     build:
       context: docker/node
     volumes:
@@ -9,16 +9,12 @@ services:
     working_dir: '/usr/app'
     env_file:
       - .env
-    environment:
-      DOCKER_HOST: tcp://docker:2375
-    command: ['/bin/sh', '-c', 'tail -f /dev/null']
+    command: [ '/bin/sh', '-c', 'tail -f /dev/null' ]
     restart: always
-    ports:
-      - 8080:8080
     depends_on:
       - docker
   docker:
-    container_name: acme_docker
+    container_name: deployer_docker
     image: docker:dind
     privileged: true
     environment:
