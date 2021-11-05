@@ -10,6 +10,7 @@ Tools:
 * eksctl
 * kubectl
 * helm
+* kustomize
 * support docker-in-docker
 
 ## Setup

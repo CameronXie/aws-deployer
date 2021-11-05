@@ -4,6 +4,7 @@ ARG AWS_CLI_VER=2.3.0
 ARG AWS_SAM_CLI_VER=1.33.0
 ARG KUBECTL_VER=1.22.0
 ARG HELM_VER=3.7.1
+ARG KUSTOMIZE=4.4.0
 ARG TMP_DIR=/tmp/deployer
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -47,5 +48,7 @@ RUN set -eux \
     && wget -q -O helm.tar.gz https://get.helm.sh/helm-v${HELM_VER}-linux-amd64.tar.gz \
     && tar -zxvf helm.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
+    # install kustomize \
+    && curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s -- ${KUSTOMIZE} /usr/local/bin \
     # clean up
     && rm -rf ${TMP_DIR}
