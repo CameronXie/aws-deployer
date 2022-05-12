@@ -12,4 +12,4 @@ create-dev-env:
 	@test -e .env || cp .env.example .env
 
 build:
-	@docker build -t cameronx/aws-deployer:latest -f docker/node/Dockerfile docker/node
+	@docker build -t cameronx/aws-deployer:latest -f docker/deployer/Dockerfile docker/deployer

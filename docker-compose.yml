@@ -1,9 +1,9 @@
 version: '3.8'
 services:
-  node:
+  deployer:
     container_name: deployer_node
     build:
-      context: docker/node
+      context: docker/deployer
     volumes:
       - './:/usr/app'
     working_dir: '/usr/app'
