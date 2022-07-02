@@ -1,12 +1,13 @@
-FROM python:3.9-bullseye
+FROM python:3.10-bullseye
 
 ARG NODE_VERSION=lts
-ARG AWS_CLI_VERSION=2.6.4
-ARG AWS_SAM_CLI_VERSION=1.50.0
+ARG AWS_CLI_VERSION=2.7.10
+ARG AWS_SAM_CLI_VERSION=1.53.0
 # https://storage.googleapis.com/kubernetes-release/release/stable.txt
-ARG KUBECTL_VERSION=1.24.0
-ARG HELM_VERSION=3.8.2
-ARG KUSTOMIZE_VERSION=4.5.4
+ARG KUBECTL_VERSION=1.24.2
+ARG HELM_VERSION=3.9.0
+ARG KUSTOMIZE_VERSION=4.5.5
+ARG EKSCTL_VERSION=0.104.0
 ARG TMP_DIR=/tmp/deployer
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -47,7 +48,7 @@ RUN set -eux \
     && wget -q -O kubectl https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     && install -m 0755 kubectl /usr/local/bin/kubectl \
     # install eksctl
-    && wget -q -O eksctl.tar.gz https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz \
+    && wget -q -O eksctl.tar.gz https://github.com/weaveworks/eksctl/releases/download/v${EKSCTL_VERSION}/eksctl_$(uname -s)_amd64.tar.gz \
     && tar -xzf eksctl.tar.gz \
     && mv eksctl /usr/local/bin \
     # install helm
