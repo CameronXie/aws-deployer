@@ -9,6 +9,8 @@ services:
     working_dir: '/usr/app'
     env_file:
       - .env
+    environment:
+      DOCKER_HOST: tcp://docker:2375
     command: [ '/bin/sh', '-c', 'tail -f /dev/null' ]
     restart: always
     depends_on:
