@@ -8,6 +8,7 @@ ARG KUBECTL_VERSION=1.24.8
 ARG HELM_VERSION=3.10.2
 ARG KUSTOMIZE_VERSION=4.5.7
 ARG EKSCTL_VERSION=0.122.0
+ARG ISTIO_VERSION=1.16.1
 ARG TMP_DIR=/tmp/deployer
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -51,6 +52,9 @@ RUN set -eux \
     && wget -q -O eksctl.tar.gz https://github.com/weaveworks/eksctl/releases/download/v${EKSCTL_VERSION}/eksctl_$(uname -s)_amd64.tar.gz \
     && tar -xzf eksctl.tar.gz \
     && mv eksctl /usr/local/bin \
+    # install istio \
+    && curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} TARGET_ARCH=x86_64 sh - \
+    && mv istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl \
     # install helm
     && wget -q -O helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && tar -zxvf helm.tar.gz \

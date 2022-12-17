@@ -4,6 +4,7 @@ services:
     container_name: deployer_node
     build:
       context: docker/deployer
+    platform: linux/amd64
     volumes:
       - './:/usr/app'
     working_dir: '/usr/app'

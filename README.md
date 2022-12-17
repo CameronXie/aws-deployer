@@ -9,6 +9,7 @@ Tools:
 * aws cli
 * aws sam cli
 * eksctl
+* istioctl
 * kubectl
 * helm
 * kustomize
