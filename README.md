@@ -4,10 +4,11 @@ A docker image contains aws deployment tools.
 
 Tools:
 
-* nodeJS (aws cdk)
-* python 3.11
+* nodeJS 20
+* python 3.12
 * aws cli
 * aws sam cli
+* rain
 * eksctl
 * istioctl
 * kubectl

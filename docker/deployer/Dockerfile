@@ -1,16 +1,17 @@
-FROM python:3.11-bullseye
+FROM python:3.12-bullseye
 
-ARG NODE_VERSION=lts
-ARG AWS_CLI_VERSION=2.9.23
-ARG AWS_SAM_CLI_VERSION=1.73.0
-# https://storage.googleapis.com/kubernetes-release/release/stable.txt
-ARG KUBECTL_VERSION=1.24.10
-ARG HELM_VERSION=3.11.1
-ARG KUSTOMIZE_VERSION=5.0.0
-ARG EKSCTL_VERSION=0.129.0
-ARG ISTIO_VERSION=1.16.2
+ARG NODE_MAJOR=20
 ARG TMP_DIR=/tmp/deployer
 ENV DEBIAN_FRONTEND=noninteractive
+
+ARG AWS_CLI_VERSION=2.15.2
+ARG AWS_SAM_CLI_VERSION=v1.105.0
+ARG RAIN_VERSION=v1.7.5
+ARG EKSCTL_VERSION=v0.166.0
+ARG KUBECTL_VERSION=v1.29.0
+ARG HELM_VERSION=v3.13.3
+ARG KUSTOMIZE_VERSION=5.3.0
+ARG ISTIO_VERSION=1.20.1
 
 COPY assume_role.sh /usr/local/bin/assume_role.sh
 
@@ -29,9 +30,11 @@ RUN set -eux \
 
 WORKDIR ${TMP_DIR}
 RUN set -eux \
-    # install Node
-    && curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
-    && apt install nodejs \
+    # install Node \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update && apt-get install nodejs -y \
     # install Docker
     && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
@@ -42,24 +45,28 @@ RUN set -eux \
     && unzip awscliv2.zip -d awscli \
     && awscli/aws/install \
     # install aws sam cli
-    && wget -q -O samcli.zip https://github.com/aws/aws-sam-cli/releases/download/v${AWS_SAM_CLI_VERSION}/aws-sam-cli-linux-x86_64.zip \
+    && wget -q -O samcli.zip https://github.com/aws/aws-sam-cli/releases/download/${AWS_SAM_CLI_VERSION}/aws-sam-cli-linux-x86_64.zip \
     && unzip samcli.zip -d samcli \
     && samcli/install \
-    # install kubectl
-    && wget -q -O kubectl https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
-    && install -m 0755 kubectl /usr/local/bin/kubectl \
+    # install aws sam cli
+    && wget -q -O rain.zip https://github.com/aws-cloudformation/rain/releases/download/${RAIN_VERSION}/rain-${RAIN_VERSION}_linux-amd64.zip \
+    && unzip rain.zip \
+    && mv rain-${RAIN_VERSION}_linux-amd64/rain /usr/local/bin/rain \
     # install eksctl
-    && wget -q -O eksctl.tar.gz https://github.com/weaveworks/eksctl/releases/download/v${EKSCTL_VERSION}/eksctl_$(uname -s)_amd64.tar.gz \
+    && wget -q -O eksctl.tar.gz https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/eksctl_$(uname -s)_amd64.tar.gz \
     && tar -xzf eksctl.tar.gz \
     && mv eksctl /usr/local/bin \
-    # install istio \
-    && curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} TARGET_ARCH=x86_64 sh - \
-    && mv istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl \
+    # install kubectl
+    && wget -q -O kubectl https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    && install -m 0755 kubectl /usr/local/bin/kubectl \
     # install helm
-    && wget -q -O helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+    && wget -q -O helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz \
     && tar -zxvf helm.tar.gz \
     && mv linux-amd64/helm /usr/local/bin/helm \
     # install kustomize \
     && curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s -- ${KUSTOMIZE_VERSION} /usr/local/bin \
+    # install istio \
+    && curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} TARGET_ARCH=x86_64 sh - \
+    && mv istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl \
     # clean up
     && rm -rf ${TMP_DIR}
