@@ -1,6 +1,6 @@
 services:
   deployer:
-    container_name: deployer_node
+    container_name: deployer_dev
     build:
       context: docker/deployer
     platform: linux/amd64
